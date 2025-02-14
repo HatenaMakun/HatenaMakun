@@ -78,3 +78,49 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+async function uploadToGitHub(file) {
+    const GITHUB_USERNAME = "HatenaMakun";
+    const REPO_NAME = "token_hatena";
+    const TOKEN = "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";  // **安全な方法で管理！**
+    const FILE_NAME = `uploads/${Date.now()}_${file.name}`;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    return new Promise((resolve, reject) => {
+        reader.onload = async function() {
+            const base64Data = reader.result.split(',')[1];  // `data:image/png;base64,xxx` を削除
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_NAME}`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${TOKEN}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: "Upload image",
+                        content: base64Data
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    console.error("GitHub APIエラー:", result);
+                    alert("画像のアップロードに失敗しました: " + (result.message || "不明なエラー"));
+                    reject(result);
+                    return;
+                }
+
+                console.log("アップロード成功:", result);
+                resolve(result.content.download_url);
+            } catch (error) {
+                console.error("アップロードエラー:", error);
+                alert("画像のアップロードに失敗しました");
+                reject(error);
+            }
+        };
+    });
+}
