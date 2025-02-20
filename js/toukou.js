@@ -15,112 +15,41 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // 投稿フォームの送信処理
-    document.getElementById('newsForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
+    // 投稿フォームの処理
+    const form = document.getElementById("newsForm");
 
-        const title = document.getElementById('title').value;
-        const content = document.getElementById('content').value;
-        const imageFile = document.getElementById('image').files[0];
+    if (form) {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
 
-        if (!title || !content || !imageFile) {
-            alert('すべての項目を入力してください');
-            return;
-        }
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content").value;
+            const imageInput = document.getElementById("image");
+            
+            if (!title || !content || !imageInput.files.length) {
+                alert("すべての項目を入力してください！");
+                return;
+            }
 
-        // 画像のアップロード処理
-        const imageUrl = await uploadToGitHub(imageFile);
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const imageData = e.target.result;
 
-        const newsData = {
-            title: title,
-            content: content,
-            image: imageUrl,  // GitHubにアップロードされた画像のURL
-            date: new Date().toLocaleString()
-        };
+                const post = {
+                    title: title,
+                    content: content,
+                    image: imageData,
+                    date: new Date().toLocaleString("ja-JP"),
+                };
 
-        let newsList = JSON.parse(localStorage.getItem('news')) || [];
-        newsList.push(newsData);
-        localStorage.setItem('news', JSON.stringify(newsList));
+                let posts = JSON.parse(localStorage.getItem("newsPosts")) || [];
+                posts.unshift(post);  // 新しい投稿を先頭に追加
+                localStorage.setItem("newsPosts", JSON.stringify(posts));
 
-        alert('投稿が完了しました！');
-        window.location.href = "news.html"; // 投稿後にニュースページへ
-    });
-
-    // GitHubに画像をアップロードする関数
-    async function uploadToGitHub(file) {
-        const GITHUB_USERNAME = "あなたのGitHubユーザー名";
-        const REPO_NAME = "リポジトリ名";
-        const TOKEN = "GitHubのPersonal Access Token";  // **安全な方法で管理！**
-        const FILE_NAME = `uploads/${Date.now()}_${file.name}`;
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        return new Promise((resolve, reject) => {
-            reader.onload = async function() {
-                const base64Data = reader.result.split(',')[1];  // `data:image/png;base64,xxx` を削除
-
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_NAME}`, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `token ${TOKEN}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: "Upload image",
-                        content: base64Data
-                    })
-                });
-
-                const result = await response.json();
-                resolve(result.content.download_url);
+                alert("投稿が完了しました！");
+                form.reset();
             };
+            reader.readAsDataURL(imageInput.files[0]);
         });
     }
 });
-
-async function uploadToGitHub(file) {
-    const GITHUB_USERNAME = "HatenaMakun";
-    const REPO_NAME = "token_hatena";
-    const TOKEN = "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";  // **安全な方法で管理！**
-    const FILE_NAME = `uploads/${Date.now()}_${file.name}`;
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    return new Promise((resolve, reject) => {
-        reader.onload = async function() {
-            const base64Data = reader.result.split(',')[1];  // `data:image/png;base64,xxx` を削除
-
-            try {
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_NAME}`, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `token ${TOKEN}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: "Upload image",
-                        content: base64Data
-                    })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    console.error("GitHub APIエラー:", result);
-                    alert("画像のアップロードに失敗しました: " + (result.message || "不明なエラー"));
-                    reject(result);
-                    return;
-                }
-
-                console.log("アップロード成功:", result);
-                resolve(result.content.download_url);
-            } catch (error) {
-                console.error("アップロードエラー:", error);
-                alert("画像のアップロードに失敗しました");
-                reject(error);
-            }
-        };
-    });
-}

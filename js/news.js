@@ -15,30 +15,27 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // ニュース表示処理
-    const newsContainer = document.querySelector('.news-grid');
-    let newsList = JSON.parse(localStorage.getItem('news')) || [];
+    // ニュースの投稿データを表示
+    const newsContainer = document.getElementById("newsContainer");
+    let posts = JSON.parse(localStorage.getItem("newsPosts")) || [];
 
-    function renderNews() {
-        newsContainer.innerHTML = newsList.map((news, index) => `
-            <article class="news-card">
-                <img src="${news.image}" alt="ニュース画像">
-                <h3>${news.title}</h3>
-                <p>${news.content}</p>
-                <small>${news.date}</small>
-                <button class="delete-btn" onclick="deletePost(${index})">削除</button>
-            </article>
-        `).join('');
+    if (posts.length === 0) {
+        newsContainer.innerHTML = "<p>まだ投稿がありません。</p>";
+        return;
     }
 
-    // 削除処理
-    window.deletePost = function(index) {
-        if (confirm('本当に削除しますか？')) {
-            newsList.splice(index, 1);
-            localStorage.setItem('news', JSON.stringify(newsList));
-            renderNews();
-        }
-    };
+    posts.forEach(post => {
+        const newsItem = document.createElement("div");
+        newsItem.classList.add("news-item");
 
-    renderNews();
+        newsItem.innerHTML = `
+            <h2>${post.title}</h2>
+            <p>${post.content}</p>
+            <img src="${post.image}" alt="投稿画像" style="max-width: 100%; height: auto;">
+            <p class="date">${post.date}</p>
+            <hr>
+        `;
+
+        newsContainer.appendChild(newsItem);
+    });
 });

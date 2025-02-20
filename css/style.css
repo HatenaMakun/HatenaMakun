@@ -18,28 +18,28 @@ header {
     margin: 0 0 30px 0;
 }
 
-#g-nav{
-    position:fixed;
+#g-nav {
+    position: fixed;
     z-index: 999;
-    top:-200%;
-    left:0;
-    width:100%;
-    height:40vh;
-    background:#fff8;
-    transition: all 0.6s;
-  }
-  
-  
-#g-nav.panelactive{
     top: 0;
-  }
+    right: -250px; 
+    width: 250px; 
+    height: 42vh;
+    padding-top: 10px;
+    background: #fff8;
+    transition: all 0.6s;
+}
+
+#g-nav.panelactive {
+    right: 0;
+}
+
   
 #g-nav.panelactive #g-nav-list{
     position: fixed;
     z-index: 999; 
-    width: 100%;
-    height: 40vh;
-    overflow: auto;
+    width: 300px;
+    height: 50vh;
     -webkit-overflow-scrolling: touch;
   }
   
@@ -47,14 +47,15 @@ header {
 #g-nav ul {
     position: absolute;
     z-index: 999;
-    top:50%;
-    left:50%;
+    top: 48%;
+    left:40%;
     transform: translate(-50%,-50%);
   }
   
 #g-nav li{
   list-style: none;
-  text-align: center; 
+  text-align: center;
+  padding: 5px 0 5px 0;
   }
   
 #g-nav li a{
@@ -66,10 +67,9 @@ header {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
   
   position: relative;
-  overflow: hidden;
   transition: all .2s;
   }
   
@@ -78,6 +78,7 @@ header {
   
     background: #E5FFF6;
     color:#000;
+    transform: scale(1.05);
   }
   
 #g-nav li a:hover{
@@ -87,10 +88,9 @@ header {
 #g-nav li a:before,
 #g-nav li a:after {
     content: "";
-    position: absolute;
     left: 0;
     height: 2px;
-    width:100%;
+    width: 76%;
     background: #fff;
     transition: all .5s;
 }
@@ -179,6 +179,7 @@ header {
     left: 18px;
     transform: translateY(-6px) rotate(45deg);
     width: 30%;
+    
 }
   .openbtn.active span:nth-of-type(3)::after {
       content:"Close";
@@ -188,10 +189,12 @@ header {
     font-size: 15px;
 }
 
-main{
-    width: 1000px;
+main {
+    width: 90%;
+    max-width: 1000px; 
     margin: auto;
 }
+
 
 
 h1{
@@ -588,7 +591,7 @@ footer{
     }
 
     .scrolldown2{
-        margin: 0 0 458px 0;
+        margin: 0 0 460px 0;
         position: absolute;
         bottom: -100px;
         left: 50%;
